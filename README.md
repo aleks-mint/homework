@@ -1,4 +1,4 @@
-Решение теоритической задачи представлено в файле solution.docx
+Решение теоритической задачи представлено в файле solution.docx <a href="https://github.com/aleks-mint/homework/blob/main/solution.docx"target="_blank">solution.docx</a>
 <br/>
 Решение практической части для первой задачи представлено в файле submission.py
 <br/>
