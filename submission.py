@@ -9,24 +9,30 @@ import wordsegUtil
 # Problem 1b: Solve the segmentation problem under a unigram model
 
 class SegmentationProblem(util.SearchProblem):
-    def __init__(self, query: str, unigramCost: Callable[[str], float]):
+    def __init__(self, query, unigramCost):
         self.query = query
         self.unigramCost = unigramCost
 
     def startState(self):
         # BEGIN_YOUR_CODE (our solution is 1 line of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
+        return self.query
         # END_YOUR_CODE
 
-    def isEnd(self, state) -> bool:
+    def isEnd(self, state):
         # BEGIN_YOUR_CODE (our solution is 2 lines of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
+        return len(state) == 0
         # END_YOUR_CODE
 
     def succAndCost(self, state):
         # BEGIN_YOUR_CODE (our solution is 7 lines of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
-        # END_YOUR_CODE
+        result = []
+        if not self.isEnd(state):
+            for i in range(len(state), 0, -1):
+                action = state[:i]
+                cost = self.unigramCost(action)
+                remainingText = state[len(action):]
+                result.append((action, remainingText, cost))
+        return result
 
 
 def segmentWords(query: str, unigramCost: Callable[[str], float]) -> str:
