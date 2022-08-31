@@ -137,261 +137,261 @@ def add_parts_1(grader, submission):
     grader.add_hidden_part('1b-4-hidden', t_1b_4, max_points=5, max_seconds=3, description='hidden test case for all queries in QUERIES_SEG')
 
 
-def add_parts_2(grader, submission):
-    grader.add_manual_part('2a', 2, description='example to justify the greedy algorithm is suboptimal in vowel insertion')
+# def add_parts_2(grader, submission):
+#     grader.add_manual_part('2a', 2, description='example to justify the greedy algorithm is suboptimal in vowel insertion')
 
-    if grader.selectedPartName in ['2b-2-hidden', '2b-4-hidden', None]:  # avoid timeouts
-        _, bigramCost, possibleFills = getRealCosts()
+#     if grader.selectedPartName in ['2b-2-hidden', '2b-4-hidden', None]:  # avoid timeouts
+#         _, bigramCost, possibleFills = getRealCosts()
 
-    def t_2b_1():
-        def bigramCost(a, b):
-            corpus = [wordsegUtil.SENTENCE_BEGIN] + 'beam me up scotty'.split()
-            if (a, b) in list(zip(corpus, corpus[1:])):
-                return 1.0
-            else:
-                return 1000.0
+#     def t_2b_1():
+#         def bigramCost(a, b):
+#             corpus = [wordsegUtil.SENTENCE_BEGIN] + 'beam me up scotty'.split()
+#             if (a, b) in list(zip(corpus, corpus[1:])):
+#                 return 1.0
+#             else:
+#                 return 1000.0
 
-        def possibleFills(x):
-            fills = {
-                'bm'   : set(['beam', 'bam', 'boom']),
-                'm'    : set(['me', 'ma']),
-                'p'    : set(['up', 'oop', 'pa', 'epe']),
-                'sctty': set(['scotty']),
-            }
-            return fills.get(x, set())
+#         def possibleFills(x):
+#             fills = {
+#                 'bm'   : set(['beam', 'bam', 'boom']),
+#                 'm'    : set(['me', 'ma']),
+#                 'p'    : set(['up', 'oop', 'pa', 'epe']),
+#                 'sctty': set(['scotty']),
+#             }
+#             return fills.get(x, set())
 
-        grader.require_is_equal(
-            '',
-            submission.insertVowels([], bigramCost, possibleFills)
-        )
-        grader.require_is_equal( # No fills
-            'zz$z$zz',
-            submission.insertVowels(['zz$z$zz'], bigramCost, possibleFills)
-        )
-        grader.require_is_equal(
-            'beam',
-            submission.insertVowels(['bm'], bigramCost, possibleFills)
-        )
-        grader.require_is_equal(
-            'me up',
-            submission.insertVowels(['m', 'p'], bigramCost, possibleFills)
-        )
-        grader.require_is_equal(
-            'beam me up scotty',
-            submission.insertVowels('bm m p sctty'.split(), bigramCost, possibleFills)
-        )
+#         grader.require_is_equal(
+#             '',
+#             submission.insertVowels([], bigramCost, possibleFills)
+#         )
+#         grader.require_is_equal( # No fills
+#             'zz$z$zz',
+#             submission.insertVowels(['zz$z$zz'], bigramCost, possibleFills)
+#         )
+#         grader.require_is_equal(
+#             'beam',
+#             submission.insertVowels(['bm'], bigramCost, possibleFills)
+#         )
+#         grader.require_is_equal(
+#             'me up',
+#             submission.insertVowels(['m', 'p'], bigramCost, possibleFills)
+#         )
+#         grader.require_is_equal(
+#             'beam me up scotty',
+#             submission.insertVowels('bm m p sctty'.split(), bigramCost, possibleFills)
+#         )
 
-    grader.add_basic_part('2b-1-basic', t_2b_1, max_points=1, max_seconds=2, description='simple test case')
+#     grader.add_basic_part('2b-1-basic', t_2b_1, max_points=1, max_seconds=2, description='simple test case')
 
-    def t_2b_2():
-        solution1 = submission.insertVowels([], bigramCost, possibleFills)
-        # No fills
-        solution2 = submission.insertVowels(['zz$z$zz'], bigramCost, possibleFills)
-        solution3 = submission.insertVowels([''], bigramCost, possibleFills)
-        solution4 = submission.insertVowels('wld lk t hv mr lttrs'.split(), bigramCost, possibleFills)
-        solution5 = submission.insertVowels('ngh lrdy'.split(), bigramCost, possibleFills)
-
-
-    grader.add_hidden_part('2b-2-hidden', t_2b_2, max_points=3, max_seconds=2, description='simple hidden test case')
-
-    def t_2b_3():
-        SB = wordsegUtil.SENTENCE_BEGIN
-
-        # Check for correct use of SENTENCE_BEGIN
-        def bigramCost(a, b):
-            if (a, b) == (SB, 'cat'):
-                return 5.0
-            elif a != SB and b == 'dog':
-                return 1.0
-            else:
-                return 1000.0
-
-        solution1 = submission.insertVowels(['x'], bigramCost, lambda x: set(['cat', 'dog']))
-
-        # Check for non-greediness
-
-        def bigramCost(a, b):
-            # Dog over log -- a test poem by rf
-            costs = {
-                (SB, 'cat'):      1.0,  # Always start with cat
-
-                ('cat', 'log'):   1.0,  # Locally prefer log
-                ('cat', 'dog'):   2.0,  # rather than dog
-
-                ('log', 'mouse'): 3.0,  # But dog would have been
-                ('dog', 'mouse'): 1.0,  # better in retrospect
-            }
-            return costs.get((a, b), 1000.0)
-
-        def fills(x):
-            return {
-                'x1': set(['cat', 'dog']),
-                'x2': set(['log', 'dog', 'frog']),
-                'x3': set(['mouse', 'house', 'cat'])
-            }[x]
-
-        solution2 = submission.insertVowels('x1 x2 x3'.split(), bigramCost, fills)
-
-        # Check for non-trivial long-range dependencies
-        def bigramCost(a, b):
-            # Dogs over logs -- another test poem by rf
-            costs = {
-                (SB, 'cat'):        1.0,  # Always start with cat
-
-                ('cat', 'log1'):    1.0,  # Locally prefer log
-                ('cat', 'dog1'):    2.0,  # Rather than dog
-
-                ('log20', 'mouse'): 1.0,  # And this might even
-                ('dog20', 'mouse'): 1.0,  # seem to be okay
-            }
-            for i in range(1, 20):       # But along the way
-            #                               Dog's cost will decay
-                costs[('log' + str(i), 'log' + str(i+1))] = 0.25
-                costs[('dog' + str(i), 'dog' + str(i+1))] = 1.0 / float(i)
-            #                               Hooray
-            return costs.get((a, b), 1000.0)
-
-        def fills(x):
-            f = {
-                'x0': set(['cat', 'dog']),
-                'x21': set(['mouse', 'house', 'cat']),
-            }
-            for i in range(1, 21):
-                f['x' + str(i)] = set(['log' + str(i), 'dog' + str(i), 'frog'])
-            return f[x]
-
-        solution3 = submission.insertVowels(['x' + str(i) for i in range(0, 22)], bigramCost, fills)
+#     def t_2b_2():
+#         solution1 = submission.insertVowels([], bigramCost, possibleFills)
+#         # No fills
+#         solution2 = submission.insertVowels(['zz$z$zz'], bigramCost, possibleFills)
+#         solution3 = submission.insertVowels([''], bigramCost, possibleFills)
+#         solution4 = submission.insertVowels('wld lk t hv mr lttrs'.split(), bigramCost, possibleFills)
+#         solution5 = submission.insertVowels('ngh lrdy'.split(), bigramCost, possibleFills)
 
 
-    grader.add_hidden_part('2b-3-hidden', t_2b_3, max_points=3, max_seconds=3, description='simple hidden test case')
+#     grader.add_hidden_part('2b-2-hidden', t_2b_2, max_points=3, max_seconds=2, description='simple hidden test case')
 
-    def t_2b_4():
-        for query in QUERIES_INS:
-            query = wordsegUtil.cleanLine(query)
-            ws = [wordsegUtil.removeAll(w, 'aeiou') for w in wordsegUtil.words(query)]
-            pred = submission.insertVowels(copy.deepcopy(ws), bigramCost, possibleFills)
+#     def t_2b_3():
+#         SB = wordsegUtil.SENTENCE_BEGIN
 
-    grader.add_hidden_part('2b-4-hidden', t_2b_4, max_points=3, max_seconds=3, description='hidden test case for all queries in QUERIES_INS')
+#         # Check for correct use of SENTENCE_BEGIN
+#         def bigramCost(a, b):
+#             if (a, b) == (SB, 'cat'):
+#                 return 5.0
+#             elif a != SB and b == 'dog':
+#                 return 1.0
+#             else:
+#                 return 1000.0
 
+#         solution1 = submission.insertVowels(['x'], bigramCost, lambda x: set(['cat', 'dog']))
 
-def add_parts_3(grader, submission):
-    grader.add_manual_part('3a', 4, description='formalize the search problem')
+#         # Check for non-greediness
 
-    if grader.selectedPartName in ['3b-2-basic', '3b-3-hidden', '3b-5-hidden', None]:  # avoid timeouts
-        unigramCost, bigramCost, possibleFills = getRealCosts()
+#         def bigramCost(a, b):
+#             # Dog over log -- a test poem by rf
+#             costs = {
+#                 (SB, 'cat'):      1.0,  # Always start with cat
 
-    def t_3b_1():
-        def bigramCost(a, b):
-            if b in ['and', 'two', 'three', 'word', 'words']:
-                return 1.0
-            else:
-                return 1000.0
+#                 ('cat', 'log'):   1.0,  # Locally prefer log
+#                 ('cat', 'dog'):   2.0,  # rather than dog
 
-        fills_ = {
-            'nd': set(['and']),
-            'tw': set(['two']),
-            'thr': set(['three']),
-            'wrd': set(['word']),
-            'wrds': set(['words']),
-        }
-        fills = lambda x: fills_.get(x, set())
+#                 ('log', 'mouse'): 3.0,  # But dog would have been
+#                 ('dog', 'mouse'): 1.0,  # better in retrospect
+#             }
+#             return costs.get((a, b), 1000.0)
 
-        grader.require_is_equal('', submission.segmentAndInsert('', bigramCost, fills))
-        grader.require_is_equal('word', submission.segmentAndInsert('wrd', bigramCost, fills))
-        grader.require_is_equal('two words', submission.segmentAndInsert('twwrds', bigramCost, fills))
-        grader.require_is_equal('and three words', submission.segmentAndInsert('ndthrwrds', bigramCost, fills))
+#         def fills(x):
+#             return {
+#                 'x1': set(['cat', 'dog']),
+#                 'x2': set(['log', 'dog', 'frog']),
+#                 'x3': set(['mouse', 'house', 'cat'])
+#             }[x]
 
-    grader.add_basic_part('3b-1-basic', t_3b_1, max_points=1, max_seconds=2, description='simple test case with hand-picked bigram costs and possible fills')
+#         solution2 = submission.insertVowels('x1 x2 x3'.split(), bigramCost, fills)
 
-    def t_3b_2():
-        bigramCost = lambda a, b: unigramCost(b)
+#         # Check for non-trivial long-range dependencies
+#         def bigramCost(a, b):
+#             # Dogs over logs -- another test poem by rf
+#             costs = {
+#                 (SB, 'cat'):        1.0,  # Always start with cat
 
-        fills_ = {
-            'nd': set(['and']),
-            'tw': set(['two']),
-            'thr': set(['three']),
-            'wrd': set(['word']),
-            'wrds': set(['words']),
-        }
-        fills = lambda x: fills_.get(x, set())
+#                 ('cat', 'log1'):    1.0,  # Locally prefer log
+#                 ('cat', 'dog1'):    2.0,  # Rather than dog
 
-        grader.require_is_equal(
-            'word',
-            submission.segmentAndInsert('wrd', bigramCost, fills))
-        grader.require_is_equal(
-            'two words',
-            submission.segmentAndInsert('twwrds', bigramCost, fills))
-        grader.require_is_equal(
-            'and three words',
-            submission.segmentAndInsert('ndthrwrds', bigramCost, fills))
+#                 ('log20', 'mouse'): 1.0,  # And this might even
+#                 ('dog20', 'mouse'): 1.0,  # seem to be okay
+#             }
+#             for i in range(1, 20):       # But along the way
+#             #                               Dog's cost will decay
+#                 costs[('log' + str(i), 'log' + str(i+1))] = 0.25
+#                 costs[('dog' + str(i), 'dog' + str(i+1))] = 1.0 / float(i)
+#             #                               Hooray
+#             return costs.get((a, b), 1000.0)
 
-    grader.add_basic_part('3b-2-basic', t_3b_2, max_points=1, max_seconds=2, description='simple test case with unigram costs as bigram costs')
+#         def fills(x):
+#             f = {
+#                 'x0': set(['cat', 'dog']),
+#                 'x21': set(['mouse', 'house', 'cat']),
+#             }
+#             for i in range(1, 21):
+#                 f['x' + str(i)] = set(['log' + str(i), 'dog' + str(i), 'frog'])
+#             return f[x]
 
-    def t_3b_3():
-        bigramCost = lambda a, b: unigramCost(b)
-        fills_ = {
-            'nd': set(['and']),
-            'tw': set(['two']),
-            'thr': set(['three']),
-            'wrd': set(['word']),
-            'wrds': set(['words']),
-            # Hah!  Hit them with two better words
-            'th': set(['the']),
-            'rwrds': set(['rewards']),
-        }
-        fills = lambda x: fills_.get(x, set())
-
-        solution1 = submission.segmentAndInsert('wrd', bigramCost, fills)
-        solution2 = submission.segmentAndInsert('twwrds', bigramCost, fills)
-        # Waddaya know
-        solution3 = submission.segmentAndInsert('ndthrwrds', bigramCost, fills)
+#         solution3 = submission.insertVowels(['x' + str(i) for i in range(0, 22)], bigramCost, fills)
 
 
-    grader.add_hidden_part('3b-3-hidden', t_3b_3, max_points=5, max_seconds=3, description='hidden test case with unigram costs as bigram costs and additional possible fills')
+#     grader.add_hidden_part('2b-3-hidden', t_2b_3, max_points=3, max_seconds=3, description='simple hidden test case')
 
-    def t_3b_4():
-        def bigramCost(a, b):
-            corpus = [wordsegUtil.SENTENCE_BEGIN] + 'beam me up scotty'.split()
-            if (a, b) in list(zip(corpus, corpus[1:])):
-                return 1.0
-            else:
-                return 1000.0
+#     def t_2b_4():
+#         for query in QUERIES_INS:
+#             query = wordsegUtil.cleanLine(query)
+#             ws = [wordsegUtil.removeAll(w, 'aeiou') for w in wordsegUtil.words(query)]
+#             pred = submission.insertVowels(copy.deepcopy(ws), bigramCost, possibleFills)
 
-        def possibleFills(x):
-            fills = {
-                'bm'   : set(['beam', 'bam', 'boom']),
-                'm'    : set(['me', 'ma']),
-                'p'    : set(['up', 'oop', 'pa', 'epe']),
-                'sctty': set(['scotty']),
-                'z'    : set(['ze']),
-            }
-            return fills.get(x, set())
-
-        # Ensure no non-word makes it through
-        solution1 = submission.segmentAndInsert('zzzzz', bigramCost, possibleFills)
-        solution2 = submission.segmentAndInsert('bm', bigramCost, possibleFills)
-        solution3 = submission.segmentAndInsert('mp', bigramCost, possibleFills)
-        solution4 = submission.segmentAndInsert('bmmpsctty', bigramCost, possibleFills)
+#     grader.add_hidden_part('2b-4-hidden', t_2b_4, max_points=3, max_seconds=3, description='hidden test case for all queries in QUERIES_INS')
 
 
-    grader.add_hidden_part('3b-4-hidden', t_3b_4, max_points=5, max_seconds=3, description='hidden test case with hand-picked bigram costs and possible fills')
+# def add_parts_3(grader, submission):
+#     grader.add_manual_part('3a', 4, description='formalize the search problem')
 
-    def t_3b_5():
-        smoothCost = wordsegUtil.smoothUnigramAndBigram(unigramCost, bigramCost, 0.2)
-        for query in QUERIES_BOTH:
-            query = wordsegUtil.cleanLine(query)
-            parts = [wordsegUtil.removeAll(w, 'aeiou') for w in wordsegUtil.words(query)]
-            pred = [submission.segmentAndInsert(part, smoothCost, possibleFills) for part in parts]
+#     if grader.selectedPartName in ['3b-2-basic', '3b-3-hidden', '3b-5-hidden', None]:  # avoid timeouts
+#         unigramCost, bigramCost, possibleFills = getRealCosts()
 
-    grader.add_hidden_part('3b-5-hidden', t_3b_5, max_points=6, max_seconds=3, description='hidden test case for all queries in QUERIES_BOTH with bigram costs and possible fills from the corpus')
+#     def t_3b_1():
+#         def bigramCost(a, b):
+#             if b in ['and', 'two', 'three', 'word', 'words']:
+#                 return 1.0
+#             else:
+#                 return 1000.0
 
-def add_parts_4(grader, submission):
-    grader.add_manual_part('4a', 2, description='example analysis')
-    grader.add_manual_part('4b', 2, description='transparency statement')
-    grader.add_manual_part('4c', 2, description='improved algorithm')
+#         fills_ = {
+#             'nd': set(['and']),
+#             'tw': set(['two']),
+#             'thr': set(['three']),
+#             'wrd': set(['word']),
+#             'wrds': set(['words']),
+#         }
+#         fills = lambda x: fills_.get(x, set())
+
+#         grader.require_is_equal('', submission.segmentAndInsert('', bigramCost, fills))
+#         grader.require_is_equal('word', submission.segmentAndInsert('wrd', bigramCost, fills))
+#         grader.require_is_equal('two words', submission.segmentAndInsert('twwrds', bigramCost, fills))
+#         grader.require_is_equal('and three words', submission.segmentAndInsert('ndthrwrds', bigramCost, fills))
+
+#     grader.add_basic_part('3b-1-basic', t_3b_1, max_points=1, max_seconds=2, description='simple test case with hand-picked bigram costs and possible fills')
+
+#     def t_3b_2():
+#         bigramCost = lambda a, b: unigramCost(b)
+
+#         fills_ = {
+#             'nd': set(['and']),
+#             'tw': set(['two']),
+#             'thr': set(['three']),
+#             'wrd': set(['word']),
+#             'wrds': set(['words']),
+#         }
+#         fills = lambda x: fills_.get(x, set())
+
+#         grader.require_is_equal(
+#             'word',
+#             submission.segmentAndInsert('wrd', bigramCost, fills))
+#         grader.require_is_equal(
+#             'two words',
+#             submission.segmentAndInsert('twwrds', bigramCost, fills))
+#         grader.require_is_equal(
+#             'and three words',
+#             submission.segmentAndInsert('ndthrwrds', bigramCost, fills))
+
+#     grader.add_basic_part('3b-2-basic', t_3b_2, max_points=1, max_seconds=2, description='simple test case with unigram costs as bigram costs')
+
+#     def t_3b_3():
+#         bigramCost = lambda a, b: unigramCost(b)
+#         fills_ = {
+#             'nd': set(['and']),
+#             'tw': set(['two']),
+#             'thr': set(['three']),
+#             'wrd': set(['word']),
+#             'wrds': set(['words']),
+#             # Hah!  Hit them with two better words
+#             'th': set(['the']),
+#             'rwrds': set(['rewards']),
+#         }
+#         fills = lambda x: fills_.get(x, set())
+
+#         solution1 = submission.segmentAndInsert('wrd', bigramCost, fills)
+#         solution2 = submission.segmentAndInsert('twwrds', bigramCost, fills)
+#         # Waddaya know
+#         solution3 = submission.segmentAndInsert('ndthrwrds', bigramCost, fills)
+
+
+#     grader.add_hidden_part('3b-3-hidden', t_3b_3, max_points=5, max_seconds=3, description='hidden test case with unigram costs as bigram costs and additional possible fills')
+
+#     def t_3b_4():
+#         def bigramCost(a, b):
+#             corpus = [wordsegUtil.SENTENCE_BEGIN] + 'beam me up scotty'.split()
+#             if (a, b) in list(zip(corpus, corpus[1:])):
+#                 return 1.0
+#             else:
+#                 return 1000.0
+
+#         def possibleFills(x):
+#             fills = {
+#                 'bm'   : set(['beam', 'bam', 'boom']),
+#                 'm'    : set(['me', 'ma']),
+#                 'p'    : set(['up', 'oop', 'pa', 'epe']),
+#                 'sctty': set(['scotty']),
+#                 'z'    : set(['ze']),
+#             }
+#             return fills.get(x, set())
+
+#         # Ensure no non-word makes it through
+#         solution1 = submission.segmentAndInsert('zzzzz', bigramCost, possibleFills)
+#         solution2 = submission.segmentAndInsert('bm', bigramCost, possibleFills)
+#         solution3 = submission.segmentAndInsert('mp', bigramCost, possibleFills)
+#         solution4 = submission.segmentAndInsert('bmmpsctty', bigramCost, possibleFills)
+
+
+#     grader.add_hidden_part('3b-4-hidden', t_3b_4, max_points=5, max_seconds=3, description='hidden test case with hand-picked bigram costs and possible fills')
+
+#     def t_3b_5():
+#         smoothCost = wordsegUtil.smoothUnigramAndBigram(unigramCost, bigramCost, 0.2)
+#         for query in QUERIES_BOTH:
+#             query = wordsegUtil.cleanLine(query)
+#             parts = [wordsegUtil.removeAll(w, 'aeiou') for w in wordsegUtil.words(query)]
+#             pred = [submission.segmentAndInsert(part, smoothCost, possibleFills) for part in parts]
+
+#     grader.add_hidden_part('3b-5-hidden', t_3b_5, max_points=6, max_seconds=3, description='hidden test case for all queries in QUERIES_BOTH with bigram costs and possible fills from the corpus')
+
+# def add_parts_4(grader, submission):
+#     grader.add_manual_part('4a', 2, description='example analysis')
+#     grader.add_manual_part('4b', 2, description='transparency statement')
+#     grader.add_manual_part('4c', 2, description='improved algorithm')
 
 add_parts_1(grader, submission)
-add_parts_2(grader, submission)
-add_parts_3(grader, submission)
-add_parts_4(grader, submission)
+# add_parts_2(grader, submission)
+# add_parts_3(grader, submission)
+# add_parts_4(grader, submission)
 grader.grade()
