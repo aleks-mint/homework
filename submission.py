@@ -4,7 +4,6 @@ import shell
 import util
 import wordsegUtil
 
-
 ############################################################
 # Problem 1b: Solve the segmentation problem under a unigram model
 
@@ -20,103 +19,103 @@ class SegmentationProblem(util.SearchProblem):
 
     def isEnd(self, state):
         # BEGIN_YOUR_CODE (our solution is 2 lines of code, but don't worry if you deviate from this)
-        return len(state) == 0
+        return len(state)==0
         # END_YOUR_CODE
 
     def succAndCost(self, state):
         # BEGIN_YOUR_CODE (our solution is 7 lines of code, but don't worry if you deviate from this)
-        result = []
+        result=[]
         if not self.isEnd(state):
-            for i in range(len(state), 0, -1):
-                action = state[:i]
-                cost = self.unigramCost(action)
-                remainingText = state[len(action):]
-                result.append((action, remainingText, cost))
+            for i in range(len(state),0,-1):
+                action=state[:i]
+                cost=self.unigramCost(action)
+                remainingText=state[len(action):]
+                result.append((action,remainingText,cost))
         return result
+        # END_YOUR_CODE
 
-
-def segmentWords(query: str, unigramCost: Callable[[str], float]) -> str:
+def segmentWords(query, unigramCost):
     if len(query) == 0:
         return ''
 
-    ucs = util.UniformCostSearch(verbose=0)
+    ucs = util.UniformCostSearch(verbose=1)
     ucs.solve(SegmentationProblem(query, unigramCost))
 
     # BEGIN_YOUR_CODE (our solution is 3 lines of code, but don't worry if you deviate from this)
-    raise Exception("Not implemented yet")
+    words=' '.join(ucs.actions)
+    return words
     # END_YOUR_CODE
-
 
 ############################################################
 # Problem 2b: Solve the vowel insertion problem under a bigram cost
 
-class VowelInsertionProblem(util.SearchProblem):
-    def __init__(self, queryWords: List[str], bigramCost: Callable[[str, str], float],
-            possibleFills: Callable[[str], Set[str]]):
-        self.queryWords = queryWords
-        self.bigramCost = bigramCost
-        self.possibleFills = possibleFills
+# class VowelInsertionProblem(util.SearchProblem):
+#     def __init__(self, queryWords: List[str], bigramCost: Callable[[str, str], float],
+#             possibleFills: Callable[[str], Set[str]]):
+#         self.queryWords = queryWords
+#         self.bigramCost = bigramCost
+#         self.possibleFills = possibleFills
 
-    def startState(self):
-        # BEGIN_YOUR_CODE (our solution is 1 line of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
-        # END_YOUR_CODE
+#     def startState(self):
+#         # BEGIN_YOUR_CODE (our solution is 1 line of code, but don't worry if you deviate from this)
+#         raise Exception("Not implemented yet")
+#         # END_YOUR_CODE
 
-    def isEnd(self, state) -> bool:
-        # BEGIN_YOUR_CODE (our solution is 2 lines of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
-        # END_YOUR_CODE
+#     def isEnd(self, state) -> bool:
+#         # BEGIN_YOUR_CODE (our solution is 2 lines of code, but don't worry if you deviate from this)
+#         raise Exception("Not implemented yet")
+#         # END_YOUR_CODE
 
-    def succAndCost(self, state):
-        # BEGIN_YOUR_CODE (our solution is 8 lines of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
-        # END_YOUR_CODE
-
-
-def insertVowels(queryWords: List[str], bigramCost: Callable[[str, str], float],
-        possibleFills: Callable[[str], Set[str]]) -> str:
-    # BEGIN_YOUR_CODE (our solution is 3 lines of code, but don't worry if you deviate from this)
-    raise Exception("Not implemented yet")
-    # END_YOUR_CODE
+#     def succAndCost(self, state):
+#         # BEGIN_YOUR_CODE (our solution is 8 lines of code, but don't worry if you deviate from this)
+#         raise Exception("Not implemented yet")
+#         # END_YOUR_CODE
 
 
-############################################################
-# Problem 3b: Solve the joint segmentation-and-insertion problem
-
-class JointSegmentationInsertionProblem(util.SearchProblem):
-    def __init__(self, query: str, bigramCost: Callable[[str, str], float],
-            possibleFills: Callable[[str], Set[str]]):
-        self.query = query
-        self.bigramCost = bigramCost
-        self.possibleFills = possibleFills
-
-    def startState(self):
-        # BEGIN_YOUR_CODE (our solution is 1 line of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
-        # END_YOUR_CODE
-
-    def isEnd(self, state) -> bool:
-        # BEGIN_YOUR_CODE (our solution is 2 lines of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
-        # END_YOUR_CODE
-
-    def succAndCost(self, state):
-        # BEGIN_YOUR_CODE (our solution is 14 lines of code, but don't worry if you deviate from this)
-        raise Exception("Not implemented yet")
-        # END_YOUR_CODE
+# def insertVowels(queryWords: List[str], bigramCost: Callable[[str, str], float],
+#         possibleFills: Callable[[str], Set[str]]) -> str:
+#     # BEGIN_YOUR_CODE (our solution is 3 lines of code, but don't worry if you deviate from this)
+#     raise Exception("Not implemented yet")
+#     # END_YOUR_CODE
 
 
-def segmentAndInsert(query: str, bigramCost: Callable[[str, str], float],
-        possibleFills: Callable[[str], Set[str]]) -> str:
-    if len(query) == 0:
-        return ''
+# ############################################################
+# # Problem 3b: Solve the joint segmentation-and-insertion problem
 
-    # BEGIN_YOUR_CODE (our solution is 4 lines of code, but don't worry if you deviate from this)
-    raise Exception("Not implemented yet")
-    # END_YOUR_CODE
+# class JointSegmentationInsertionProblem(util.SearchProblem):
+#     def __init__(self, query: str, bigramCost: Callable[[str, str], float],
+#             possibleFills: Callable[[str], Set[str]]):
+#         self.query = query
+#         self.bigramCost = bigramCost
+#         self.possibleFills = possibleFills
+
+#     def startState(self):
+#         # BEGIN_YOUR_CODE (our solution is 1 line of code, but don't worry if you deviate from this)
+#         raise Exception("Not implemented yet")
+#         # END_YOUR_CODE
+
+#     def isEnd(self, state) -> bool:
+#         # BEGIN_YOUR_CODE (our solution is 2 lines of code, but don't worry if you deviate from this)
+#         raise Exception("Not implemented yet")
+#         # END_YOUR_CODE
+
+#     def succAndCost(self, state):
+#         # BEGIN_YOUR_CODE (our solution is 14 lines of code, but don't worry if you deviate from this)
+#         raise Exception("Not implemented yet")
+#         # END_YOUR_CODE
 
 
-############################################################
+# def segmentAndInsert(query: str, bigramCost: Callable[[str, str], float],
+#         possibleFills: Callable[[str], Set[str]]) -> str:
+#     if len(query) == 0:
+#         return ''
 
-if __name__ == '__main__':
-    shell.main()
+#     # BEGIN_YOUR_CODE (our solution is 4 lines of code, but don't worry if you deviate from this)
+#     raise Exception("Not implemented yet")
+#     # END_YOUR_CODE
+
+
+# ############################################################
+
+# if __name__ == '__main__':
+#     shell.main()
