@@ -1,3 +1,5 @@
+Условие задачи: https://stanford-cs221.github.io/spring2022/assignments/reconstruct/index.html
+<br/>
 Решение теоритической задачи представлено в файле <a href="https://github.com/aleks-mint/homework/blob/main/solution.docx">solution.docx</a>
 <br/>
 Решение практической части для первой задачи представлено в файле <a href="https://github.com/aleks-mint/homework/blob/main/submission.py">submission.py</a>
